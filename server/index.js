@@ -52,6 +52,18 @@ app.post('/menu', async (req, res) => {
   }
 });
 
+// 5. DELETE Route: Remove a dish by ID
+app.delete('/menu/:id', async (req, res) => {
+  try {
+    const { id } = req.params; // Get the ID number from the URL
+    await pool.query('DELETE FROM menu WHERE id = $1', [id]);
+    res.json({ message: "Dish deleted!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
+
 app.listen(5000, () => {
   console.log('The Kitchen is open on port 5000');
 });

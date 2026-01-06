@@ -5,7 +5,6 @@ function App() {
   const [menu, setMenu] = useState([]);
   const [dishName, setDishName] = useState("");
 
-  // 1. Fetch the menu when the app loads
   useEffect(() => {
     fetchMenu();
   }, []);
@@ -16,7 +15,6 @@ function App() {
     setMenu(data);
   };
 
-  // 2. Submit a new dish to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!dishName) return;
@@ -27,8 +25,16 @@ function App() {
       body: JSON.stringify({ name: dishName })
     });
 
-    setDishName(""); // Clear input
-    fetchMenu();     // Refresh the list
+    setDishName("");
+    fetchMenu();
+  };
+
+  // NEW: Function to delete a dish
+  const deleteDish = async (id) => {
+    await fetch(`http://localhost:5000/menu/${id}`, {
+      method: 'DELETE',
+    });
+    fetchMenu(); // Refresh the list immediately
   };
 
   return (
@@ -36,7 +42,6 @@ function App() {
       <header className="App-header">
         <h1>Restaurant Menu</h1>
 
-        {/* The Input Form */}
         <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
           <input
             type="text"
@@ -45,16 +50,40 @@ function App() {
             onChange={(e) => setDishName(e.target.value)}
             style={{ padding: '10px', fontSize: '16px' }}
           />
-          <button type="submit" style={{ padding: '10px', fontSize: '16px' }}>
+          <button type="submit" style={{ padding: '10px', fontSize: '16px', marginLeft: '5px' }}>
             Add Dish
           </button>
         </form>
 
-        {/* The List */}
-        <ul style={{ listStyle: 'none', padding: 0 }}>
+        <ul style={{ listStyle: 'none', padding: 0, width: '300px' }}>
           {menu.map((dish) => (
-            <li key={dish.id} style={{ margin: '10px', fontSize: '1.5rem', background: '#282c34', padding: '10px', border: '1px solid white' }}>
-              🍽️ {dish.name}
+            <li key={dish.id} style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              margin: '10px 0',
+              fontSize: '1.2rem',
+              background: '#282c34',
+              padding: '10px',
+              border: '1px solid white',
+              borderRadius: '5px'
+            }}>
+              <span>🍽️ {dish.name}</span>
+              
+              {/* The Delete Button */}
+              <button 
+                onClick={() => deleteDish(dish.id)}
+                style={{ 
+                  background: 'red', 
+                  color: 'white', 
+                  border: 'none', 
+                  padding: '5px 10px', 
+                  cursor: 'pointer',
+                  borderRadius: '3px'
+                }}
+              >
+                X
+              </button>
             </li>
           ))}
         </ul>
